@@ -1,49 +1,63 @@
+async function processFiles() {
+  const csvInput = document.getElementById("csvFile").files[0];
+  const imageFiles = Array.from(document.getElementById("imageFiles").files);
 
-document.getElementById('processBtn').addEventListener('click', async function () {
-    const csvFile = document.getElementById('csvFile').files[0];
-    const imageFiles = document.getElementById('jpegFiles').files;
+  if (!csvInput || imageFiles.length === 0) {
+    alert("Please upload both CSV and JPEG files.");
+    return;
+  }
 
-    if (!csvFile || imageFiles.length === 0) {
-        alert('Please upload both CSV and JPEG files.');
-        return;
+  const csvText = await csvInput.text();
+  const lines = csvText.trim().split(/\r?\n/);
+  const headers = lines[0].split(",");
+  const frameIndex = headers.indexOf("Frame");
+  const cameraNameIndex = headers.indexOf("Camera_Name");
+
+  if (frameIndex === -1 || cameraNameIndex === -1) {
+    alert("CSV must contain 'Frame' and 'Camera_Name' columns.");
+    return;
+  }
+
+  const mapping = {};
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i].split(",");
+    const frame = row[frameIndex].padStart(3, "0").replace(/^0+(?!$)/, "");
+    const cameraName = row[cameraNameIndex].split(".")[0];
+    mapping[frame] = cameraName;
+  }
+
+  const zip = new JSZip();
+  const missingFrames = [];
+
+  imageFiles.forEach(file => {
+    const frameNumber = file.name.split(".")[0].replace(/^0+(?!$)/, "");
+    const newName = mapping[frameNumber];
+    if (newName) {
+      zip.file(newName + ".jpg", file);
+    } else {
+      missingFrames.push(frameNumber);
     }
+  });
 
-    const csvText = await csvFile.text();
-    const rows = csvText.split('\n').slice(1);
-    const frameMap = {};
+  if (missingFrames.length > 0) {
+    const missingContainer = document.getElementById("missingFramesContainer");
+    const missingList = document.getElementById("missingFramesList");
+    missingList.innerHTML = "";
+    missingFrames.sort((a, b) => parseInt(a) - parseInt(b)).forEach(f => {
+      const li = document.createElement("li");
+      li.textContent = f;
+      missingList.appendChild(li);
+    });
+    missingContainer.classList.remove("hidden");
+  } else {
+    document.getElementById("missingFramesContainer").classList.add("hidden");
+  }
 
-    for (let row of rows) {
-        const cols = row.split(',');
-        if (cols.length < 2) continue;
-        const frame = cols[0].trim();
-        const cameraName = cols[1].trim().split('.')[0];
-        const paddedFrame = frame.padStart(4, '0'); // Fix: pad frame numbers
-        frameMap[paddedFrame] = cameraName;
-    }
-
-    const zip = new JSZip();
-    let renamedCount = 0;
-
-    for (let file of imageFiles) {
-        const fileName = file.name.split('.')[0];
-        const ext = file.name.split('.').pop();
-        const newName = frameMap[fileName];
-        if (newName) {
-            zip.file(`${newName}.${ext}`, file);
-            renamedCount++;
-        }
-    }
-
-    if (renamedCount === 0) {
-        alert('No matching files were found. Please check your frame numbers.');
-        return;
-    }
-
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'renamed_images.zip';
+  if (Object.keys(zip.files).length > 0) {
+    const content = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(content);
+    a.download = "renamed_images.zip";
     a.click();
-    URL.revokeObjectURL(url);
-});
+  }
+}

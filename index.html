@@ -1,22 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>📸 Frame to Camera Renamer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎥 Frame to Camera Renamer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>📸 Frame to Camera Renamer</h1>
-  <p>
-    Upload a <code>camera_bindings.csv</code> and JPEG files to rename based on frame numbers
-    (e.g. 1, 01, 001). CSV camera names like <code>SId-123456.001</code> will be cleaned to
-    <code>SId-123456</code>.
-  </p>
-  <p><strong>Upload CSV:</strong> <input type="file" id="csvFile" accept=".csv" /></p>
-  <p><strong>Upload JPEG images:</strong> <input type="file" id="jpegFiles" accept=".jpg,.jpeg" multiple /></p>
-  <button id="processBtn">🔄 Process and Download ZIP</button>
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <div class="container">
+    <h1>🎥 Frame to Camera Renamer</h1>
+    <p>Upload a CSV file and the matching JPEG images to rename them using the camera names.</p>
+
+    <label>Upload CSV:</label>
+    <input type="file" id="csvFile" accept=".csv" />
+
+    <label>Upload JPEG images:</label>
+    <input type="file" id="imageFiles" accept=".jpg,.jpeg" multiple />
+
+    <button onclick="processFiles()">Generate ZIP</button>
+
+    <div id="missingFramesContainer" class="hidden">
+      <h3>⚠️ Missing Frames</h3>
+      <ul id="missingFramesList"></ul>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

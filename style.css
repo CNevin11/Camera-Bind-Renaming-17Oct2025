@@ -1,21 +1,26 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f9f9f9;
-  color: #333;
-  padding: 2rem;
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background: #fff;
+    color: #222;
 }
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+h1 {
+    font-size: 28px;
 }
-input, button {
-  display: block;
-  margin: 1rem 0;
+code {
+    background-color: #eee;
+    padding: 2px 4px;
+    border-radius: 3px;
 }
-.hidden {
-  display: none;
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+#status {
+    margin-top: 20px;
+    font-weight: bold;
+}
+#skippedList {
+    color: #aa0000;
 }

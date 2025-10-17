@@ -2,28 +2,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>📸 Frame to Camera Renamer</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📸 Frame to Camera Renamer</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-    <h1>📸 Frame to Camera Renamer</h1>
-    <p>Upload a <code>camera_bindings.csv</code> and JPEG files to rename based on frame numbers (e.g. 1, 01, 001).
-    CSV camera names like <code>SId-123456.001</code> will be cleaned to <code>SId-123456</code>.</p>
+  <h1>📸 Frame to Camera Renamer</h1>
+  <p>
+    Upload a <code>camera_bindings.csv</code> and JPEG files to rename based on frame numbers
+    (e.g. 1, 01, 001). CSV camera names like <code>SId-123456.001</code> will be cleaned to
+    <code>SId-123456</code>.
+  </p>
 
-    <h2>Upload CSV:</h2>
-    <input type="file" id="csvFile" accept=".csv"><br><br>
+  <label>Upload CSV:</label>
+  <input type="file" id="csvFile" accept=".csv" />
 
-    <h2>Upload JPEG images:</h2>
-    <input type="file" id="jpegFiles" accept=".jpg,.jpeg" multiple><br><br>
+  <label>Upload JPEG images:</label>
+  <input type="file" id="imageFiles" accept=".jpg,.jpeg" multiple />
 
-    <button onclick="processFiles()">🔄 Process and Download ZIP</button>
+  <button id="processButton">🔁 Process and Download ZIP</button>
 
-    <pre id="output"></pre>
-
-    <!-- JSZip Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Script Logic -->
-    <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

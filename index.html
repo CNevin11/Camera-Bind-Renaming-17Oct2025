@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frame to Camera Renamer</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Frame to Camera Renamer</h1>
+    <p>Upload a <code>camera_bindings.csv</code> and JPEG files to rename based on frame numbers (e.g. 1, 01, 001). CSV camera names like <code>SId-123456.001</code> will be cleaned to <code>SId-123456</code>.</p>
+
+    <label for="csvInput"><strong>Upload CSV:</strong></label>
+    <input type="file" id="csvInput" accept=".csv" /><br><br>
+
+    <label for="jpegInput"><strong>Upload JPEG images:</strong></label>
+    <input type="file" id="jpegInput" accept=".jpg,.jpeg" multiple /><br><br>
+
+    <button id="processBtn">🔄 Process and Download ZIP</button>
+  </div>
+</body>
+</html>

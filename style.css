@@ -1,26 +1,34 @@
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
-    background: #fff;
-    color: #222;
+  font-family: sans-serif;
+  padding: 2rem;
+  background: #f8f8f8;
 }
-h1 {
-    font-size: 28px;
+.upload-area {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
-code {
-    background-color: #eee;
-    padding: 2px 4px;
-    border-radius: 3px;
+.upload-area label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
 }
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+.upload-area input {
+  margin-bottom: 1rem;
 }
-#status {
-    margin-top: 20px;
-    font-weight: bold;
+#processBtn {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background: #2b72ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
-#skippedList {
-    color: #aa0000;
+.output {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #333;
 }

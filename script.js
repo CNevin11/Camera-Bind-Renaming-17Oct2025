@@ -1,63 +1,67 @@
-async function processFiles() {
-  const csvInput = document.getElementById("csvFile").files[0];
-  const imageFiles = Array.from(document.getElementById("imageFiles").files);
 
-  if (!csvInput || imageFiles.length === 0) {
-    alert("Please upload both CSV and JPEG files.");
+function processFiles() {
+  const csvFile = document.getElementById('csvFile').files[0];
+  const jpgFiles = Array.from(document.getElementById('jpgFiles').files);
+
+  if (!csvFile || jpgFiles.length === 0) {
+    alert("Please upload both a CSV file and JPEG images.");
     return;
   }
 
-  const csvText = await csvInput.text();
-  const lines = csvText.trim().split(/\r?\n/);
-  const headers = lines[0].split(",");
-  const frameIndex = headers.indexOf("Frame");
-  const cameraNameIndex = headers.indexOf("Camera_Name");
-
-  if (frameIndex === -1 || cameraNameIndex === -1) {
-    alert("CSV must contain 'Frame' and 'Camera_Name' columns.");
-    return;
-  }
-
-  const mapping = {};
-  for (let i = 1; i < lines.length; i++) {
-    const row = lines[i].split(",");
-    const frame = row[frameIndex].padStart(3, "0").replace(/^0+(?!$)/, "");
-    const cameraName = row[cameraNameIndex].split(".")[0];
-    mapping[frame] = cameraName;
-  }
-
-  const zip = new JSZip();
-  const missingFrames = [];
-
-  imageFiles.forEach(file => {
-    const frameNumber = file.name.split(".")[0].replace(/^0+(?!$)/, "");
-    const newName = mapping[frameNumber];
-    if (newName) {
-      zip.file(newName + ".jpg", file);
-    } else {
-      missingFrames.push(frameNumber);
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    const csvData = event.target.result;
+    const lines = csvData.split(/\r?\n/);
+    const header = lines[0].split(',');
+    const frameIndex = header.findIndex(h => h.toLowerCase().includes('frame'));
+    const nameIndex = header.findIndex(h => h.toLowerCase().includes('camera_name'));
+    if (frameIndex === -1 || nameIndex === -1) {
+      alert("CSV must have headers including 'Frame' and 'Camera_Name'");
+      return;
     }
-  });
 
-  if (missingFrames.length > 0) {
-    const missingContainer = document.getElementById("missingFramesContainer");
-    const missingList = document.getElementById("missingFramesList");
-    missingList.innerHTML = "";
-    missingFrames.sort((a, b) => parseInt(a) - parseInt(b)).forEach(f => {
-      const li = document.createElement("li");
-      li.textContent = f;
-      missingList.appendChild(li);
+    const mapping = {};
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',');
+      const frame = cols[frameIndex].trim().replace(/^0+/, '');  // remove leading 0s
+      const camName = cols[nameIndex].trim().split('.')[0];      // clean name
+      if (frame && camName) mapping[frame] = camName;
+    }
+
+    const zip = new JSZip();
+    const missing = [];
+    jpgFiles.forEach(file => {
+      const match = file.name.match(/(\d+)/);
+      if (match) {
+        const frameNum = match[1].replace(/^0+/, '');
+        const newName = mapping[frameNum];
+        if (newName) {
+          zip.file(newName + ".jpg", file);
+        } else {
+          missing.push(frameNum);
+        }
+      }
     });
-    missingContainer.classList.remove("hidden");
-  } else {
-    document.getElementById("missingFramesContainer").classList.add("hidden");
-  }
 
-  if (Object.keys(zip.files).length > 0) {
-    const content = await zip.generateAsync({ type: "blob" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(content);
-    a.download = "renamed_images.zip";
-    a.click();
-  }
+    // Show missing
+    const box = document.getElementById("missingFramesBox");
+    const list = document.getElementById("missingFrames");
+    list.innerHTML = "";
+    if (missing.length > 0) {
+      box.classList.remove("hidden");
+      missing.forEach(f => {
+        const li = document.createElement("li");
+        li.textContent = f;
+        list.appendChild(li);
+      });
+    } else {
+      box.classList.add("hidden");
+    }
+
+    zip.generateAsync({ type: "blob" }).then(content => {
+      saveAs(content, "renamed_images.zip");
+    });
+  };
+
+  reader.readAsText(csvFile);
 }

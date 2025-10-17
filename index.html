@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frame to Camera Renamer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Frame to Camera Renamer</h1>
+    <p>Upload a <code>camera_bindings.csv</code> and JPEG files to rename based on frame numbers (e.g. 1, 01, 001). CSV camera names like <code>SId-123456.001</code> will be cleaned to <code>SId-123456</code>.</p>
+
+    <label>Upload CSV:</label>
+    <input type="file" id="csvInput" accept=".csv" />
+
+    <label>Upload JPEG images:</label>
+    <input type="file" id="imageInput" accept=".jpg,.jpeg" multiple />
+
+    <button id="processBtn">🔄 Process and Download ZIP</button>
+
+    <div id="log"></div>
+    <div id="skippedPanel" class="hidden">
+      <h3>⚠️ Skipped Files</h3>
+      <pre id="skippedList"></pre>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

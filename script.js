@@ -1,67 +1,44 @@
+document.getElementById("processBtn").addEventListener("click", async () => {
+  const csvFile = document.getElementById("csvFile").files[0];
+  const imageFiles = [...document.getElementById("imageFiles").files];
+  if (!csvFile || imageFiles.length === 0) return alert("Upload both CSV and JPEGs");
 
-function processFiles() {
-  const csvFile = document.getElementById('csvFile').files[0];
-  const jpgFiles = Array.from(document.getElementById('jpgFiles').files);
-
-  if (!csvFile || jpgFiles.length === 0) {
-    alert("Please upload both a CSV file and JPEG images.");
-    return;
+  const csvText = await csvFile.text();
+  const rows = csvText.trim().split("\n").slice(1);
+  const mapping = {};
+  for (let row of rows) {
+    const [frame, name] = row.split(",");
+    mapping[parseInt(frame.trim(), 10)] = name.trim();
   }
 
-  const reader = new FileReader();
-  reader.onload = function (event) {
-    const csvData = event.target.result;
-    const lines = csvData.split(/\r?\n/);
-    const header = lines[0].split(',');
-    const frameIndex = header.findIndex(h => h.toLowerCase().includes('frame'));
-    const nameIndex = header.findIndex(h => h.toLowerCase().includes('camera_name'));
-    if (frameIndex === -1 || nameIndex === -1) {
-      alert("CSV must have headers including 'Frame' and 'Camera_Name'");
-      return;
-    }
+  const zip = new JSZip();
+  const missingFrames = [];
 
-    const mapping = {};
-    for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(',');
-      const frame = cols[frameIndex].trim().replace(/^0+/, '');  // remove leading 0s
-      const camName = cols[nameIndex].trim().split('.')[0];      // clean name
-      if (frame && camName) mapping[frame] = camName;
-    }
-
-    const zip = new JSZip();
-    const missing = [];
-    jpgFiles.forEach(file => {
-      const match = file.name.match(/(\d+)/);
-      if (match) {
-        const frameNum = match[1].replace(/^0+/, '');
-        const newName = mapping[frameNum];
-        if (newName) {
-          zip.file(newName + ".jpg", file);
-        } else {
-          missing.push(frameNum);
-        }
-      }
-    });
-
-    // Show missing
-    const box = document.getElementById("missingFramesBox");
-    const list = document.getElementById("missingFrames");
-    list.innerHTML = "";
-    if (missing.length > 0) {
-      box.classList.remove("hidden");
-      missing.forEach(f => {
-        const li = document.createElement("li");
-        li.textContent = f;
-        list.appendChild(li);
-      });
+  for (const file of imageFiles) {
+    const match = file.name.match(/(\d+)/);
+    if (!match) continue;
+    const frameNumber = parseInt(match[1], 10);
+    const cameraName = mapping[frameNumber];
+    if (cameraName) {
+      zip.file(`${cameraName}.jpg`, file);
     } else {
-      box.classList.add("hidden");
+      missingFrames.push(match[1]);
     }
+  }
 
-    zip.generateAsync({ type: "blob" }).then(content => {
-      saveAs(content, "renamed_images.zip");
-    });
-  };
+  const missingSection = document.getElementById("missingFramesSection");
+  const missingList = document.getElementById("missingFramesList");
+  if (missingFrames.length > 0) {
+    missingList.innerHTML = missingFrames.map(f => `<li>${f}</li>`).join("");
+    missingSection.classList.remove("hidden");
+  } else {
+    missingList.innerHTML = "";
+    missingSection.classList.add("hidden");
+  }
 
-  reader.readAsText(csvFile);
-}
+  const blob = await zip.generateAsync({ type: "blob" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "renamed_images.zip";
+  a.click();
+});

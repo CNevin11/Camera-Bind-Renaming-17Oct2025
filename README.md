@@ -1,27 +1,28 @@
+
 # Frame to Camera Renamer (Web App)
 
 This GitHub Pages app allows you to:
-- Upload a `.csv` file with **CameraName in column 1** and **FrameNumber in column 2**
-- Upload a batch of `.jpeg` or `.jpg` images with padded/unpadded frame numbers
-- All `.jpg` files will be renamed to `.jpeg`
-- `.001`, `.002` style suffixes will be ignored in camera IDs
+- Upload a `.csv` file with **Frame Number**, **Section ID**, and **Ticket Class ID** in columns A, B, and C.
+- Upload `.jpeg` or `.jpg` images named with padded or unpadded frame numbers (e.g. `0001.jpg`)
+- Files are renamed to format: `SId-<SectionId>-TCId-<TicketClassId>.jpeg`
 
 ## Example CSV
 
 ```
-SId-123456.001,1
-SId-789012.002,2
+Frame Number,Section ID,Ticket Class ID
+1,1144587,514
+2,1144588,515
 ```
 
-## Example Image
+## Example Input → Output
 
 ```
-img_00001.jpg → SId-123456.jpeg
+0001.jpg → SId-1144587-TCId-514.jpeg
 ```
 
-## GitHub Pages Deployment
+## How to Deploy to GitHub Pages
 
-1. Create a repo and upload the files
-2. Go to Settings > Pages > Source: `main` + `/ (root)`
-3. Access the live app at:
-   https://<your-username>.github.io/frame-camera-renamer/
+1. Upload files to a GitHub repo
+2. Go to **Settings > Pages**
+3. Set source to `main` branch and root
+4. App will be available at `https://<your-username>.github.io/<repo-name>/`

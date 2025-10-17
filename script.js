@@ -1,3 +1,4 @@
+
 document.getElementById('processBtn').addEventListener('click', () => {
   const csvFile = document.getElementById('csvInput').files[0];
   const images = Array.from(document.getElementById('imageInput').files);
@@ -13,11 +14,13 @@ document.getElementById('processBtn').addEventListener('click', () => {
   Papa.parse(csvFile, {
     complete: function(results) {
       const bindings = {};
-      results.data.forEach(row => {
-        if (!row[0] || !row[1]) return;
-        const cameraId = row[0].split('.')[0]; // strip .001, .002
-        const frame = parseInt(row[1].replace(/^0+/, '')); // remove padding
-        if (!isNaN(frame)) bindings[frame] = cameraId;
+      results.data.forEach((row, index) => {
+        if (index === 0) return; // skip header
+        let [frame, sectionId, ticketClassId] = row;
+        if (!frame || !sectionId || !ticketClassId) return;
+        const cleanFrame = parseInt(frame.replace(/^0+/, ''));
+        const cameraId = `SId-${sectionId}-TCId-${ticketClassId}`;
+        bindings[cleanFrame] = cameraId;
       });
 
       const zip = new JSZip();
